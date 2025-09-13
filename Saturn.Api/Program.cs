@@ -7,10 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.Register();
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Wow>());
 
-builder.Services.AddSaturnContext(builder.Configuration);
+builder.Services.RegisterServices();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ApplicationAssemblyMarker>());
+builder.Services.AddAutoMapper(x => x.AddMaps(typeof(ApplicationAssemblyMarker).Assembly));
+builder.Services.AddSaturnContext(builder.Configuration.GetConnectionString("Saturn"));
 
 var app = builder.Build();
 
