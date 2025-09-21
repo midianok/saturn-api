@@ -8,10 +8,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.RegisterServices();
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ApplicationAssemblyMarker>());
-builder.Services.AddAutoMapper(x => x.AddMaps(typeof(ApplicationAssemblyMarker).Assembly));
-builder.Services.AddSaturnContext(builder.Configuration.GetConnectionString("Saturn"));
+builder.Services
+    .RegisterServices()
+    .AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ApplicationAssemblyMarker>())
+    .AddAutoMapper(x => x.AddMaps(typeof(ApplicationAssemblyMarker).Assembly))
+    .AddSaturnContext(builder.Configuration.GetConnectionString("Saturn"));
 
 var app = builder.Build();
 
