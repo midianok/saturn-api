@@ -6,10 +6,15 @@ using Saturn.Application.Features.SaveMessage;
 namespace Saturn.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("message")]
 public class MessageController(IMediator mediator) : ControllerBase
 {
-    [HttpPost]
+    /// <summary>
+    /// Save telegram message
+    /// </summary>
+    /// <param name="saveMessageDto"></param>
+    /// <returns></returns>
+    [HttpPost(Name = "SaveMessage")]
     public Task SaveMessageAsync(SaveMessageDto saveMessageDto) => 
         mediator.Send(new SaveMessageCommand(saveMessageDto));
 }
