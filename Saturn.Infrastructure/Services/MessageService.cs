@@ -19,33 +19,53 @@ public class MessageService : IMessageService
         _memoryCache = memoryCache;
     }
     
-    public async Task SaveMessageAsync(TelegramMessage telegramMessage)
+    public async Task SaveMessageAsync(TelegramMessage telegramMessage, CancellationToken cancellationToken)
     {
         if (telegramMessage.From == null || telegramMessage.Chat == null) return;
         
-        await _semaphoreSlim.WaitAsync();
+        await _semaphoreSlim.WaitAsync(cancellationToken);
         try
         {
-            await using var db = await _contextFactory.CreateDbContextAsync();
+            await using var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
         
             await ProcessUser(telegramMessage.From, db);
             await ProcessChat(telegramMessage.Chat, db);
             await ProcessMessage(telegramMessage, db);
 
-            await db.SaveChangesAsync();
+            await db.SaveChangesAsync(cancellationToken);
         }
         finally
         {
             _semaphoreSlim.Release();
         }
     }
-    
+
+    public async Task<UserMessageStatistics> GetUserMessageStatisticsAsync(long userId, long chatId, CancellationToken cancellationToken)
+    {
+        var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
+
+        var messageTypes = await db.Messages.Where(x => x.ChatId == chatId && x.UserId == userId)
+            .Select(x => new { x.Type, x.User!.Username })
+            .ToListAsync(cancellationToken: cancellationToken);
+        
+        return new UserMessageStatistics
+        { 
+            UserName = messageTypes.FirstOrDefault()?.Username,
+            VoiceCount = messageTypes.Count(x => x.Type == (int) MessageType.Voice),
+            VideoNoteCount = messageTypes.Count(x => x.Type == (int) MessageType.VideoNote),
+            PhotoCount = messageTypes.Count(x => x.Type == (int) MessageType.Photo),
+            StickerCount = messageTypes.Count(x => x.Type == (int) MessageType.Sticker),
+            AnimationCount = messageTypes.Count(x => x.Type == (int) MessageType.Animation),
+            VideoCount = messageTypes.Count(x => x.Type == (int) MessageType.Video)
+        };
+    }
+
     private async Task ProcessMessage(TelegramMessage msg, SaturnContext db) => 
         await db.Messages.AddAsync(CreateMessage(msg));
     
     private async Task ProcessChat(TelegramChat tgChat, SaturnContext db)
     {
-        var chat = await GetCachedEntityById<ChatEntity>(tgChat.Id, db, TimeSpan.FromHours(30));;
+        var chat = await GetCachedEntityById<ChatEntity>(tgChat.Id, db, TimeSpan.FromHours(30));
 
         if (chat == null)
         {

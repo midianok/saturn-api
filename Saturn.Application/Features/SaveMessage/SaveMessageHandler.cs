@@ -19,6 +19,6 @@ public class SaveMessageHandler : IRequestHandler<SaveMessageCommand>
     public Task Handle(SaveMessageCommand request, CancellationToken cancellationToken)
     {
         var telegramMessage = _mapper.Map<TelegramMessage>(request.SaveMessage);
-        return _messageService.SaveMessageAsync(telegramMessage);
+        return _messageService.SaveMessageAsync(telegramMessage, cancellationToken);
     }
 }
