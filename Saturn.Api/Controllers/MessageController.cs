@@ -19,6 +19,13 @@ public class MessageController(IMediator mediator) : ControllerBase
     public Task SaveMessageAsync(SaveMessageDto saveMessageDto) => 
         mediator.Send(new SaveMessageCommand(saveMessageDto), HttpContext.RequestAborted);
     
+    
+    /// <summary>
+    /// Get user message statistics for a specific chat
+    /// </summary>
+    /// <param name="userId">The Telegram user ID</param>
+    /// <param name="chatId">The Telegram chat ID</param>
+    /// <returns>Statistics containing message counts by type for the specified user in the chat</returns>
     [HttpGet(Name = "GetUserMessageStatistics")]
     public Task<UserMessageStatisticsResponseDto> GetUserMessageStatisticsAsync(long userId, long chatId) => 
         mediator.Send(new GetUserMessageStatisticsQuery(chatId, userId), HttpContext.RequestAborted);
