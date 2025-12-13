@@ -40,23 +40,33 @@ public class MessageService : IMessageService
         }
     }
 
-    public async Task<UserMessageStatistics> GetUserMessageStatisticsAsync(long userId, long chatId, CancellationToken cancellationToken)
+    public async Task<UserMessageStatistics> GetUserMessageStatisticsAsync(long chatId, long userId, DateTime? from, DateTime? to, CancellationToken cancellationToken)
     {
         var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-        var messageTypes = await db.Messages.Where(x => x.ChatId == chatId && x.UserId == userId)
+        var query = db.Messages
+            .Where(x => x.ChatId == chatId && x.UserId == userId);
+
+        if (from.HasValue)
+            query = query.Where(x => x.MessageDate >= from.Value);
+
+        if (to.HasValue)
+            query = query.Where(x => x.MessageDate <= to.Value);
+
+        var messages = await query
             .Select(x => new { x.Type, x.User!.Username })
             .ToListAsync(cancellationToken: cancellationToken);
         
         return new UserMessageStatistics
         { 
-            UserName = messageTypes.FirstOrDefault()?.Username,
-            VoiceCount = messageTypes.Count(x => x.Type == (int) MessageType.Voice),
-            VideoNoteCount = messageTypes.Count(x => x.Type == (int) MessageType.VideoNote),
-            PhotoCount = messageTypes.Count(x => x.Type == (int) MessageType.Photo),
-            StickerCount = messageTypes.Count(x => x.Type == (int) MessageType.Sticker),
-            AnimationCount = messageTypes.Count(x => x.Type == (int) MessageType.Animation),
-            VideoCount = messageTypes.Count(x => x.Type == (int) MessageType.Video)
+            UserName = messages.FirstOrDefault()?.Username,
+            MessagesCount = messages.Count,
+            VoiceCount = messages.Count(x => x.Type == (int) MessageType.Voice),
+            VideoNoteCount = messages.Count(x => x.Type == (int) MessageType.VideoNote),
+            PhotoCount = messages.Count(x => x.Type == (int) MessageType.Photo),
+            StickerCount = messages.Count(x => x.Type == (int) MessageType.Sticker),
+            AnimationCount = messages.Count(x => x.Type == (int) MessageType.Animation),
+            VideoCount = messages.Count(x => x.Type == (int) MessageType.Video)
         };
     }
 

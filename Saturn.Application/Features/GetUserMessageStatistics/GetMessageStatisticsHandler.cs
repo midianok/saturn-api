@@ -18,7 +18,7 @@ public class GetMessageStatisticsHandler : IRequestHandler<GetUserMessageStatist
 
     public async Task<UserMessageStatisticsResponseDto> Handle(GetUserMessageStatisticsQuery request, CancellationToken cancellationToken)
     {
-        var userMessageStatistics = await _messageService.GetUserMessageStatisticsAsync(request.UserId, request.ChatId, cancellationToken);
+        var userMessageStatistics = await _messageService.GetUserMessageStatisticsAsync(request.UserId, request.ChatId,request.From, request.To, cancellationToken);
         return _mapper.Map<UserMessageStatisticsResponseDto>(userMessageStatistics);
     }
 }
