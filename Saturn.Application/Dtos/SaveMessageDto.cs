@@ -16,13 +16,17 @@ public record SaveMessageDto
     
     public int ChatType { get; init; }
     
-    public string? StickerFileId { get; init; }
+    public string? StickerId { get; init; }
     
-    public long FromId { get; init; }
+    public long? FromId { get; init; }
     
     public string? FromFirstName { get; init; }
     
     public string? FromLastName { get; init; }
     
     public string? FromUsername { get; init; }
+    
+    public long? ReplyToMessageId { get; init; }
+    
+    public long? ReplyToMessageChatId { get; init; }
 }

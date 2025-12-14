@@ -2,18 +2,21 @@
 
 public class TelegramMessage
 {
-    public long Id { get; init; }
-    public string? Text { get; init; }
+    public long Id { get; set; }
+
+    public DateTime MessageDate { get; set; }
     
-    public DateTime Date { get; init; }
+    public int Type { get; set; }
+
+    public string? Text { get; set; }
+
+    public string? StickerId { get; set; }
     
-    public int Type { get; init; }
+    public long? ReplyToMessageId { get; set; }
     
-    public TelegramMessage? ReplyToMessage { get; init; }
+    public long? ReplyToMessageChatId { get; set; }
     
-    public TelegramUser? From { get; init; }
+    public TelegramUser? From { get; set; }
     
-    public TelegramChat? Chat { get; init; }
-    
-    public TelegramSticker? Sticker { get; init; }
+    public TelegramChat? Chat { get; set; }
 }

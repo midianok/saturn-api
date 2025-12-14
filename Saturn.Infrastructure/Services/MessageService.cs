@@ -175,11 +175,11 @@ public class MessageService : IMessageService
             ChatId = msg.Chat!.Id,
             Type = msg.Type,
             Text = msg.Text,
-            MessageDate = msg.Date,
-            StickerId = msg.Sticker?.FileId,
+            MessageDate = msg.MessageDate,
+            StickerId = msg.StickerId,
             UserId = msg.From!.Id,
-            ReplyToMessageId = msg.ReplyToMessage?.Id,
-            ReplyToMessageChatId = msg.ReplyToMessage?.Chat!.Id,
+            ReplyToMessageId = msg.ReplyToMessageId,
+            ReplyToMessageChatId = msg.ReplyToMessageChatId,
         };
     
     private static ChatEntity CreateChat(TelegramChat tgChat) =>
