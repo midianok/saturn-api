@@ -1,22 +1,22 @@
 ﻿namespace Saturn.Domain.Model;
 
-public class TelegramMessage
+public record TelegramMessage
 {
-    public long Id { get; set; }
+    public long Id { get; init; }
 
-    public DateTime MessageDate { get; set; }
+    public DateTime MessageDate { get; init; }
     
-    public int Type { get; set; }
+    public int Type { get; init; }
 
-    public string? Text { get; set; }
+    public string? Text { get; init; }
 
-    public string? StickerId { get; set; }
+    public string? StickerId { get; init; }
     
-    public long? ReplyToMessageId { get; set; }
+    public long? ReplyToMessageId { get; init; }
     
-    public long? ReplyToMessageChatId { get; set; }
+    public long? ReplyToMessageChatId { get; init; }
     
-    public TelegramUser? From { get; set; }
+    public TelegramUser? From { get; init; }
     
-    public TelegramChat? Chat { get; set; }
+    public TelegramChat? Chat { get; init; }
 }

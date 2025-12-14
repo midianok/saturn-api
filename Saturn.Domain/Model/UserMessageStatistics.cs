@@ -1,6 +1,6 @@
 ﻿namespace Saturn.Domain.Model;
 
-public class UserMessageStatistics
+public record UserMessageStatistics
 {
     public string? UserName { get; init; }
     

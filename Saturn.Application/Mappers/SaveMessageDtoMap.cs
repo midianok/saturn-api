@@ -5,9 +5,8 @@ namespace Saturn.Application.Mappers;
 
 public static class SaveMessageDtoMap
 {
-    public static TelegramMessage ToTelegramMessage(this SaveMessageDto saveMessageDto)
-    {
-        var message = new TelegramMessage
+    public static TelegramMessage ToTelegramMessage(this SaveMessageDto saveMessageDto) =>
+        new()
         {
             Id = saveMessageDto.MessageId,
             Text = saveMessageDto.MessageText,
@@ -16,25 +15,8 @@ public static class SaveMessageDtoMap
             StickerId = saveMessageDto.StickerId,
             ReplyToMessageId = saveMessageDto.ReplyToMessageId,
             ReplyToMessageChatId = saveMessageDto.ReplyToMessageChatId,
-            Chat = new TelegramChat
-            {
-                Id = saveMessageDto.ChatId,
-                Name = saveMessageDto.ChatName,
-                Type = saveMessageDto.ChatType
-            },
+            Chat = new TelegramChat(saveMessageDto.ChatId, saveMessageDto.ChatType, saveMessageDto.ChatName),
+            From = saveMessageDto.FromId.HasValue ? 
+                new TelegramUser(saveMessageDto.FromId.Value, saveMessageDto.FromUsername, saveMessageDto.FromFirstName, saveMessageDto.FromLastName) : null
         };
-        
-        if (saveMessageDto.FromId.HasValue)
-        {
-            message.From = new TelegramUser
-            {
-                Id = saveMessageDto.FromId.Value,
-                FirstName = saveMessageDto.FromFirstName ?? string.Empty,
-                LastName = saveMessageDto.FromLastName ?? string.Empty,
-                Username = saveMessageDto.FromUsername ?? string.Empty
-            };
-        }
-
-        return message;
-    }
 }
