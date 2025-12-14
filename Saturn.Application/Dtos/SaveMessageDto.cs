@@ -1,6 +1,6 @@
 ﻿namespace Saturn.Application.Dtos;
 
-public class SaveMessageDto
+public record SaveMessageDto
 {
     public long MessageId { get; init; }
     

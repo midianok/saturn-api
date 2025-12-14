@@ -10,8 +10,16 @@ builder.Services.AddSwaggerGen();
 
 builder.Services
     .RegisterServices()
-    .AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ApplicationAssemblyMarker>())
-    .AddAutoMapper(x => x.AddMaps(typeof(ApplicationAssemblyMarker).Assembly))
+    .AddMediatR(cfg =>
+    {
+        cfg.RegisterServicesFromAssemblyContaining<ApplicationAssemblyMarker>();
+        cfg.LicenseKey = builder.Configuration.GetValue<string>("LicenseKey");
+    })
+    .AddAutoMapper(cfg =>
+    {
+        cfg.AddMaps(typeof(ApplicationAssemblyMarker).Assembly);
+        cfg.LicenseKey = builder.Configuration.GetValue<string>("LicenseKey");
+    })
     .AddSaturnContext(builder.Configuration.GetConnectionString("Saturn"));
 
 var app = builder.Build();

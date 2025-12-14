@@ -70,6 +70,50 @@ public class MessageService : IMessageService
         };
     }
 
+    public async Task<IReadOnlyCollection<UserChatStatistics>> GetChatMessageStatisticsAsync(long chatId, DateTime? from, DateTime? to, CancellationToken cancellationToken)
+    {
+        var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        
+        var query = db.Messages
+            .Where(x => x.ChatId == chatId);
+
+        if (from.HasValue)
+            query = query.Where(x => x.MessageDate >= from.Value);
+
+        if (to.HasValue)
+            query = query.Where(x => x.MessageDate <= to.Value);
+
+        var messages = await query
+            .GroupBy(x => x.UserId)
+            .Select(x => new UserChatStatistics
+            {
+                UserId = x.Key, 
+                Username = x.First().User!.Username, 
+                FirstName = x.First().User!.FirstName, 
+                LastName = x.First().User!.LastName, 
+                MessageCount = x.Count()
+            })
+            .OrderByDescending(x => x.MessageCount)
+            .ToListAsync(cancellationToken);
+
+        return messages;
+    }
+
+    public async Task<string?> GetFavStickerAsync(long userId, long chatId, CancellationToken cancellationToken)
+    {
+        var db = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        var userStickers = await db.Messages
+            .Where(x => x.ChatId == chatId && x.UserId == userId &&
+                        x.Type == (int) MessageType.Sticker)
+            .ToListAsync(cancellationToken: cancellationToken);
+
+        var favSticker = userStickers.GroupBy(x => x.StickerId)
+            .OrderByDescending(grp => grp.Count())
+            .FirstOrDefault();
+        
+        return favSticker?.Key;
+    }
+
     private async Task ProcessMessage(TelegramMessage msg, SaturnContext db) => 
         await db.Messages.AddAsync(CreateMessage(msg));
     

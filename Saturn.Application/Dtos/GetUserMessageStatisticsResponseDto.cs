@@ -1,6 +1,6 @@
 ﻿namespace Saturn.Application.Dtos;
 
-public class UserMessageStatisticsResponseDto
+public record GetUserMessageStatisticsResponseDto
 {
     public string? UserName { get; init; }
 

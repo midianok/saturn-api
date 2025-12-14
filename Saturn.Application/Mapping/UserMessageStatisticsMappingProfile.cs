@@ -8,6 +8,6 @@ public class UserMessageStatisticsMappingProfile : Profile
 {
     public UserMessageStatisticsMappingProfile()
     {
-        CreateMap<UserMessageStatistics, UserMessageStatisticsResponseDto>();
+        CreateMap<UserMessageStatistics, GetUserMessageStatisticsResponseDto>();
     }
 }

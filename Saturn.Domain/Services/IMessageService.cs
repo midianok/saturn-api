@@ -7,4 +7,8 @@ public interface IMessageService
     Task SaveMessageAsync(TelegramMessage telegramMessage, CancellationToken cancellationToken);
     
     Task<UserMessageStatistics> GetUserMessageStatisticsAsync(long userId, long chatId, DateTime? from, DateTime? to, CancellationToken cancellationToken); 
+    
+    Task<IReadOnlyCollection<UserChatStatistics>> GetChatMessageStatisticsAsync(long chatId, DateTime? from, DateTime? to, CancellationToken cancellationToken); 
+    
+    Task<string?> GetFavStickerAsync(long userId, long chatId, CancellationToken cancellationToken); 
 }
