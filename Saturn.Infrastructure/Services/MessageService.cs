@@ -85,14 +85,7 @@ public class MessageService : IMessageService
 
         var messages = await query
             .GroupBy(x => x.UserId)
-            .Select(x => new UserChatStatistics
-            {
-                UserId = x.Key, 
-                Username = x.First().User!.Username, 
-                FirstName = x.First().User!.FirstName, 
-                LastName = x.First().User!.LastName, 
-                MessageCount = x.Count()
-            })
+            .Select(x => new UserChatStatistics(x.Key, x.First().User!.Username, x.First().User!.FirstName, x.First().User!.LastName, x.Count()))
             .OrderByDescending(x => x.MessageCount)
             .ToListAsync(cancellationToken);
 

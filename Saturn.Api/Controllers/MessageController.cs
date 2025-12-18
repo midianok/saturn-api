@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MapsterMapper;
+using Microsoft.AspNetCore.Mvc;
 using Saturn.Application.Dtos;
-using Saturn.Application.Mappers;
 using Saturn.Domain.Model;
 using Saturn.Domain.Services;
 
@@ -8,7 +8,7 @@ namespace Saturn.Api.Controllers;
 
 [ApiController]
 [Route("message")]
-public class MessageController(IMessageService messageService) : ControllerBase
+public class MessageController(IMessageService messageService, IMapper mapper) : ControllerBase
 {
     /// <summary>
     /// Save telegram message
@@ -16,8 +16,11 @@ public class MessageController(IMessageService messageService) : ControllerBase
     /// <param name="saveMessageDto"></param>
     /// <returns></returns>
     [HttpPost("save-message")]
-    public Task SaveMessageAsync(SaveMessageDto saveMessageDto) => 
-        messageService.SaveMessageAsync(saveMessageDto.ToTelegramMessage(), HttpContext.RequestAborted);
+    public Task SaveMessageAsync(SaveMessageDto saveMessageDto)
+    {
+        var telegramMessage = mapper.Map<TelegramMessage>(saveMessageDto);
+        return messageService.SaveMessageAsync(telegramMessage, HttpContext.RequestAborted);
+    }
 
 
     /// <summary>
@@ -32,7 +35,7 @@ public class MessageController(IMessageService messageService) : ControllerBase
     public async Task<GetUserMessageStatisticsResponseDto> GetUserMessageStatisticsAsync(long chatId, long userId, DateTime? from, DateTime? to)
     {
         var result = await messageService.GetUserMessageStatisticsAsync(chatId, userId, from, to, HttpContext.RequestAborted);
-        return result.ToGetUserMessageStatisticsResponse();
+        return mapper.Map<GetUserMessageStatisticsResponseDto>(result);
     }
 
 
@@ -47,8 +50,7 @@ public class MessageController(IMessageService messageService) : ControllerBase
     public async Task<GetChatMessageStatisticsResponseDto> GetChatMessageStatisticsAsync(long chatId, DateTime? from, DateTime? to)
     {
         var result = await messageService.GetChatMessageStatisticsAsync(chatId, from, to, HttpContext.RequestAborted);
-        var userChatStatisticsDto = result.Select(x => x.ToGetUserMessageStatisticsResponse()).ToArray();
-        return new GetChatMessageStatisticsResponseDto(userChatStatisticsDto);
+        return mapper.Map<GetChatMessageStatisticsResponseDto>(result);
     }
 
     /// <summary>
