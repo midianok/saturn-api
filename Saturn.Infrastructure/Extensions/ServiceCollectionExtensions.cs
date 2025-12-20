@@ -9,20 +9,22 @@ namespace Saturn.Infrastructure.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection RegisterServices(this IServiceCollection serviceCollection) =>
-        serviceCollection.AddMemoryCache()
-            .AddTransient<IMessageService, MessageService>();
-
-    public static IServiceCollection AddSaturnContext(this IServiceCollection serviceCollection, string? connectionString)
+    extension(IServiceCollection serviceCollection)
     {
-        ArgumentNullException.ThrowIfNull(connectionString);
-        
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        return serviceCollection.AddDbContextFactory<SaturnContext>(options =>
+        public IServiceCollection RegisterServices() =>
+            serviceCollection.AddMemoryCache().AddTransient<IMessageService, MessageService>();
+
+        public IServiceCollection AddSaturnContext(string? connectionString)
         {
-            options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention();
-            options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
-            options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-        }, ServiceLifetime.Transient);
+            ArgumentNullException.ThrowIfNull(connectionString);
+        
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            return serviceCollection.AddDbContextFactory<SaturnContext>(options =>
+            {
+                options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention();
+                options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
+                options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            }, ServiceLifetime.Transient);
+        }
     }
 }
